@@ -2,6 +2,24 @@
   "name": "@eriizu/mdpublish",
   "version": "0.1.0",
   "description": "Publish an Obsidian-style Markdown folder as a static website.",
+  "keywords": [
+    "markdown",
+    "obsidian",
+    "static-site-generator",
+    "wiki",
+    "publishing",
+    "documentation",
+    "cli"
+  ],
+  "homepage": "https://github.com/eriizu/mdpublish#readme",
+  "bugs": {
+    "url": "https://github.com/eriizu/mdpublish/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eriizu/mdpublish.git"
+  },
+  "license": "CC0-1.0",
   "type": "module",
   "bin": {
     "mdpublish": "dist/cli.js"
@@ -15,11 +33,17 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test test/*.test.js",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm test",
     "example": "npm run build && node dist/cli.js build example-vault --out example-site",
     "dev:example": "npm run build && node dist/cli.js dev example-vault --out example-site"
   },
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "chokidar": "^4.0.3",
