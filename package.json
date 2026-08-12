@@ -1,0 +1,39 @@
+{
+  "name": "@eriizu/mdpublish",
+  "version": "0.1.0",
+  "description": "Publish an Obsidian-style Markdown folder as a static website.",
+  "type": "module",
+  "bin": {
+    "mdpublish": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test test/*.test.js",
+    "example": "npm run build && node dist/cli.js build example-vault --out example-site",
+    "dev:example": "npm run build && node dist/cli.js dev example-vault --out example-site"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.2",
+    "katex": "^0.18.4",
+    "markdown-it": "^14.1.0",
+    "mermaid": "^11.16.1",
+    "mime-types": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.2"
+  }
+}

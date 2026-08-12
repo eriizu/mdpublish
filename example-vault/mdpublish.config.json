@@ -1,0 +1,14 @@
+{
+  "title": "Field Notes",
+  "welcome": "Home.md",
+  "navigation": [
+    {
+      "path": "Home.md",
+      "label": "Overview"
+    },
+    {
+      "path": "Guides/",
+      "label": "Guides"
+    }
+  ]
+}

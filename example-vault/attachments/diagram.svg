@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" role="img" aria-labelledby="title description">
+  <title id="title">Markdown folder to published website</title>
+  <desc id="description">A folder of notes flows through mdpublish into a browser window.</desc>
+  <rect width="720" height="260" rx="24" fill="#eee9ff"/>
+  <g font-family="system-ui, sans-serif" fill="#292821">
+    <path d="M72 79h95l20 22h109v105H72z" fill="#fff" stroke="#6d4aff" stroke-width="5"/>
+    <text x="184" y="158" text-anchor="middle" font-size="25" font-weight="700">notes</text>
+    <path d="M323 140h81" fill="none" stroke="#6d4aff" stroke-width="7" stroke-linecap="round"/>
+    <path d="m390 121 22 19-22 19" fill="none" stroke="#6d4aff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="434" y="55" width="220" height="150" rx="12" fill="#fff" stroke="#6d4aff" stroke-width="5"/>
+    <path d="M434 88h220" stroke="#6d4aff" stroke-width="5"/>
+    <circle cx="455" cy="72" r="5" fill="#6d4aff"/>
+    <circle cx="473" cy="72" r="5" fill="#6d4aff"/>
+    <text x="544" y="154" text-anchor="middle" font-size="25" font-weight="700">website</text>
+  </g>
+</svg>

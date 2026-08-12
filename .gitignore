@@ -1,0 +1,5 @@
+node_modules/
+dist/
+example-site/
+coverage/
+.DS_Store
