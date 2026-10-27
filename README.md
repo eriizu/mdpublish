@@ -168,3 +168,59 @@ mdpublish build ./my-vault --out ./site --base /notes/
 
 The output contains only HTML, CSS, JavaScript, and your copied attachments; it
 does not require a server-side runtime.
+
+## Building and publishing named sites
+
+For several vaults or destinations, add one JSON file per site in `sites/` and
+run the project recipes from the repository root:
+
+```sh
+just build bdc      # Generate .build/bdc locally
+just publish bdc    # Upload the last successful build
+just deploy bdc     # Build, then publish if the site's warning policy permits it
+```
+
+The site name defaults to `bdc`. These recipes compile the CLI first. The same
+operations are available through `node dist/cli.js site build|publish|deploy bdc`.
+`build` and `publish` are independent, so you can inspect the local output
+before publishing. By default, a build with warnings exits with status 2 and
+`deploy` stops before contacting the host. Set `build.allowWarnings` to `true`
+for a site that must publish despite known content warnings; errors still stop
+the deployment. The BDC profile uses this setting for five missing images.
+
+A site file such as `sites/bdc.json` has this structure:
+
+```json
+{
+  "vault": "~/Sync/Obsidian/BDC",
+  "build": {
+    "out": ".build/bdc",
+    "base": "/",
+    "allowWarnings": true
+  },
+  "overrides": {
+    "title": "Published BDC",
+    "welcome": "Accueil.md",
+    "navigation": ["Classes/", "Resources/", "Accueil.md"]
+  },
+  "publish": {
+    "type": "ssh-release",
+    "host": "intra",
+    "root": "services/mdpublish/site"
+  }
+}
+```
+
+Local paths are relative to the repository root; `~/` expands to your home
+directory. `build.base` is the URL base path. Each property in `overrides`
+replaces the corresponding property from the vault's `mdpublish.config.json`;
+unspecified properties keep their vault values. `navigation` replaces the whole
+array when present, including when it is empty. Omit `publish` for a site that
+only needs local builds. Keep credentials in your SSH configuration.
+
+The `ssh-release` publisher needs `ssh` and `tar` on both machines. It streams
+the built site to a new directory under `publish.root/releases/`, then switches
+`publish.root/contents` to that release with a symlink. On the first publish, an
+existing `contents` directory moves to `releases/legacy-...`. Older releases
+remain there for rollback or manual cleanup. The local build marker is excluded
+from the uploaded site.

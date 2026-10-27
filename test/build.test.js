@@ -27,6 +27,18 @@ async function temporaryVault() {
       "",
       "> [!tip] Title only",
       "",
+      "> [!note] Code example",
+      ">",
+      "> ```ts",
+      "> const message = \"a very long line that must scroll inside the callout instead of widening the page\";",
+      "> ```",
+      "",
+      "> [!note] Outer callout",
+      "> Outer body.",
+      ">",
+      "> > [!tip] Inner callout",
+      "> > Inner body.",
+      "",
       "Inline math: $E = mc^2$",
       "",
       "$$",
@@ -95,6 +107,15 @@ test("builds pages, navigation, wikilinks, headings, and images", async (context
     home,
     /class="callout callout-tip callout-title-only"[^]*?<span>Title only<\/span><\/div><\/aside>/,
   );
+  assert.match(
+    home,
+    /class="callout callout-note callout-has-content"[^]*?<div class="callout-content"><pre><code class="hljs language-ts">/,
+  );
+  assert.equal(home.match(/const<\/span> message/g)?.length, 1);
+  assert.match(
+    home,
+    /callout-note callout-has-content[^]*?<span>Outer callout<\/span>[^]*?callout-tip callout-has-content[^]*?<span>Inner callout<\/span>[^]*?Inner body\.<\/p>[^]*?<\/aside>[^]*?<\/aside>/,
+  );
   assert.match(home, /class="hljs language-js"/);
   assert.match(home, /class="hljs-keyword">const<\/span>/);
   assert.match(home, /class="katex"/);
@@ -119,7 +140,12 @@ test("builds pages, navigation, wikilinks, headings, and images", async (context
   );
   assert.match(stylesheet, /@media \(max-width: 1000px\)[^]*?\.site-sidebar[^]*?translateX\(-105%\)/);
   assert.match(stylesheet, /@media \(max-width: 720px\)[^]*?\.page-toc[^]*?order: -1/);
-  assert.doesNotMatch(stylesheet, /\.page-toc\s*\{\s*display:\s*none/);
+  const screenStylesheet = stylesheet.slice(0, stylesheet.indexOf("@media print"));
+  assert.doesNotMatch(screenStylesheet, /\.page-toc\s*\{\s*display:\s*none/);
+  assert.match(stylesheet, /@media print \{[^]*?\.site-sidebar, \.nav-toggle, \.page-toc \{ display: none !important; \}/);
+  assert.match(stylesheet, /@media print \{[^]*?\.callout, \.callout-title \{[^}]*?print-color-adjust: exact;/);
+  assert.match(stylesheet, /@page \{[^]*?@bottom-center \{ content: counter\(page\) " \/ " counter\(pages\);/);
+  assert.match(stylesheet, /@media screen and \(prefers-color-scheme: dark\)/);
   assert.match(
     stylesheet,
     /\.page li > ul, \.page li > ol \{ margin-top: 0; margin-bottom: 0; \}/,
@@ -128,6 +154,8 @@ test("builds pages, navigation, wikilinks, headings, and images", async (context
     stylesheet,
     /\.page h1:not\(\.page-title\), \.page h2, \.page h3, \.page h4 \{[^}]*border-bottom: 1px solid var\(--border\)/,
   );
+  assert.match(stylesheet, /\.callout \{[^}]*min-width: 0/);
+  assert.match(stylesheet, /\.callout-content \{[^}]*min-width: 0/);
 });
 
 test("reports unresolved and ambiguous wikilinks", async (context) => {

@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { buildSite } from "./builder.js";
+import { publishSite } from "./publish.js";
 import { startDevServer } from "./server.js";
+import { loadSiteProfile, profileFingerprint } from "./site-profiles.js";
 
 const HELP = `mdpublish — publish a Markdown folder as a static site
 
 Usage:
   mdpublish build [folder] [options]
   mdpublish dev [folder] [options]
+  mdpublish site build <name>
+  mdpublish site publish <name>
+  mdpublish site deploy <name>
 
 Options:
   -o, --out <folder>   Output folder (default: site)
@@ -24,6 +29,32 @@ interface Arguments {
   title?: string;
   basePath?: string;
   port?: number;
+}
+
+async function siteCommand(argv: string[]): Promise<void> {
+  const [action, name, ...extra] = argv;
+  if (!name || extra.length || !["build", "publish", "deploy"].includes(action)) {
+    throw new Error("Use site build, site publish, or site deploy followed by a site name");
+  }
+  const profile = await loadSiteProfile(name);
+  if (action === "build" || action === "deploy") {
+    const result = await buildSite({
+      inputDir: profile.vault,
+      outputDir: profile.build.out,
+      basePath: profile.build.base,
+      configOverrides: profile.overrides,
+      configOverridesLabel: `${profile.configPath}: overrides`,
+      profileFingerprint: profileFingerprint(profile),
+    });
+    console.log(`Built ${result.pages} pages and ${result.assets} assets in ${result.outputDir}`);
+    for (const warning of result.warnings) console.warn(`warning: ${warning}`);
+    if (result.warnings.length && !profile.build.allowWarnings) {
+      process.exitCode = 2;
+      return;
+    }
+    if (result.warnings.length) console.warn("Continuing because build.allowWarnings is true");
+  }
+  if (action === "publish" || action === "deploy") await publishSite(profile);
 }
 
 function parseArguments(argv: string[]): Arguments | undefined {
@@ -66,6 +97,10 @@ function parseArguments(argv: string[]): Arguments | undefined {
 }
 
 async function main(): Promise<void> {
+  if (process.argv[2] === "site") {
+    await siteCommand(process.argv.slice(3));
+    return;
+  }
   const args = parseArguments(process.argv.slice(2));
   if (!args) {
     console.log(HELP);

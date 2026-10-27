@@ -58,6 +58,9 @@ export interface BuildOptions {
   outputDir: string;
   title?: string;
   basePath?: string;
+  configOverrides?: SiteConfig;
+  configOverridesLabel?: string;
+  profileFingerprint?: string;
   liveReload?: boolean;
 }
 

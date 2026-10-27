@@ -28,6 +28,11 @@ An [ordinary Markdown link](Guides/Publishing.md) is rewritten too.
 > [!success]
 > This note was turned into a static page.
 
+> [!note] Highlighted code in a callout
+> ```ts
+> const published = true;
+> ```
+
 ## Math and diagrams
 
 Inline math such as $E = mc^2$ and display equations are rendered with KaTeX:

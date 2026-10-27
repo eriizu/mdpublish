@@ -66,17 +66,20 @@ export async function buildSite(options: BuildOptions): Promise<BuildResult> {
   const inputDir = path.resolve(options.inputDir);
   const outputDir = path.resolve(options.outputDir);
   const basePath = normalizeBasePath(options.basePath);
-  const config = await loadSiteConfig(inputDir);
+  const config = { ...(await loadSiteConfig(inputDir)), ...options.configOverrides };
+  const overridesLabel = options.configOverridesLabel ?? "site overrides";
+  const welcomeLabel = options.configOverrides?.welcome !== undefined ? overridesLabel : CONFIG_FILENAME;
+  const navigationLabel = options.configOverrides?.navigation !== undefined ? overridesLabel : CONFIG_FILENAME;
   const vault = await loadVault(inputDir, outputDir);
   if (!vault.pages.length) throw new Error(`No publishable Markdown files found in ${inputDir}`);
-  if (config.welcome) applyWelcomePage(vault, config.welcome);
+  if (config.welcome) applyWelcomePage(vault, config.welcome, welcomeLabel);
 
   await prepareOutputDirectory(outputDir, inputDir);
   const siteTitle = options.title?.trim() || config.title || path.basename(inputDir);
   const warningSet = new Set<string>();
   const navigation = config.navigation
     ? buildConfiguredNavigation(vault, config.navigation, (warning) =>
-        warningSet.add(`${CONFIG_FILENAME}: ${warning}`),
+        warningSet.add(`${navigationLabel}: ${warning}`),
       )
     : buildDefaultNavigation(vault.pages);
   const markdown = createMarkdownRenderer();
@@ -132,7 +135,13 @@ export async function buildSite(options: BuildOptions): Promise<BuildResult> {
   ]);
   await fs.writeFile(
     path.join(outputDir, OUTPUT_MARKER),
-    JSON.stringify({ generatedAt: new Date().toISOString(), source: inputDir }, null, 2),
+    JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      source: inputDir,
+      basePath,
+      warningCount: warningSet.size,
+      ...(options.profileFingerprint ? { profileFingerprint: options.profileFingerprint } : {}),
+    }, null, 2),
   );
 
   return {

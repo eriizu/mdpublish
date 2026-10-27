@@ -46,7 +46,7 @@ a:hover { text-decoration-thickness: .14em; }
 .page li > ul, .page li > ol { margin-top: 0; margin-bottom: 0; }
 .page img { display: block; max-width: 100%; height: auto; margin: 1.6rem 0; border-radius: 10px; }
 .page blockquote { margin-left: 0; padding: .15rem 1rem; color: var(--muted); border-left: 3px solid var(--accent); }
-.page pre { overflow-x: auto; padding: 18px; border-radius: 10px; background: var(--code); line-height: 1.5; }
+.page pre { overflow-x: auto; padding: 18px; border-radius: 10px; background: var(--code); line-height: 1.5; tab-size: 4; }
 .page code { padding: .15em .34em; border-radius: 4px; background: var(--code); font: .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .page pre code { padding: 0; background: transparent; }
 .page table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
@@ -55,11 +55,12 @@ a:hover { text-decoration-thickness: .14em; }
 .broken-link, .broken-embed { color: #b83232; text-decoration-style: wavy; }
 .broken-embed { display: inline-block; padding: .2rem .5rem; border: 1px dashed currentColor; border-radius: 5px; }
 
-.callout { --callout-color: #4f75c7; margin: 1.5rem 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--callout-color) 48%, var(--border)); border-left: 4px solid var(--callout-color); border-radius: 9px; background: color-mix(in srgb, var(--callout-color) 9%, var(--surface)); }
+.callout { --callout-color: #4f75c7; min-width: 0; max-width: 100%; margin: 1.5rem 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--callout-color) 48%, var(--border)); border-left: 4px solid var(--callout-color); border-radius: 9px; background: color-mix(in srgb, var(--callout-color) 9%, var(--surface)); }
 .callout-title { display: flex; align-items: center; gap: 9px; padding: 10px 14px; color: var(--callout-color); font-size: .9rem; font-weight: 750; background: color-mix(in srgb, var(--callout-color) 10%, transparent); }
 .callout-title-only { background: transparent; }
 .callout-icon { display: inline-grid; flex: 0 0 20px; place-items: center; width: 20px; height: 20px; border: 1.5px solid currentColor; border-radius: 50%; font-size: .72rem; line-height: 1; }
-.callout-content { padding: 3px 14px 8px; }
+.callout-content { min-width: 0; padding: 3px 14px 8px; }
+.callout-content pre { max-width: 100%; margin-right: 0; margin-left: 0; }
 .callout-content > :first-child { margin-top: .65rem; }
 .callout-content > :last-child { margin-bottom: .65rem; }
 .callout-tip, .callout-hint, .callout-important { --callout-color: #7a55d9; }
@@ -97,7 +98,7 @@ a:hover { text-decoration-thickness: .14em; }
 .page-list a:hover { border-color: var(--accent); }
 .nav-toggle { display: none; }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root { --background: #171715; --sidebar: #1e1e1b; --surface: #23231f; --text: #eeece4; --muted: #aaa79d; --border: #363630; --accent: #ad9aff; --accent-soft: #302951; --code: #262621; }
   .hljs { color: #c9d1d9; }
   .hljs-comment, .hljs-quote { color: #8b949e; }
@@ -123,6 +124,31 @@ a:hover { text-decoration-thickness: .14em; }
   .content-grid { grid-template-columns: minmax(0, var(--content-width)); gap: 28px; }
   .page-toc { position: static; order: -1; max-height: none; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
   .page-toc ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); column-gap: 18px; }
+}
+
+@media print {
+  :root { color-scheme: light; --background: #fff; --surface: #fff; font-size: 11pt; }
+  @page {
+    margin: 18mm 16mm;
+    @bottom-center { content: counter(page) " / " counter(pages); color: #716f65; font: 9pt Inter, ui-sans-serif, system-ui, sans-serif; }
+  }
+  html { scroll-behavior: auto; }
+  body { line-height: 1.5; }
+  .site-sidebar, .nav-toggle, .page-toc { display: none !important; }
+  .layout { min-height: 0; margin: 0; padding: 0; }
+  .content-grid { display: block; }
+  .page .page-title { font-size: 18pt; }
+  .page h1:not(.page-title) { font-size: 15pt; }
+  .page h2 { font-size: 13.5pt; }
+  .page h3 { font-size: 12pt; }
+  .page h4 { font-size: 11pt; }
+  .page h1, .page h2, .page h3, .page h4, .callout-title { break-after: avoid; }
+  .page pre, .page img, .page tr, .callout, .math-block, .mermaid { break-inside: avoid; }
+  .callout, .callout-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page pre { overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .page table { display: table; overflow: visible; }
+  .math-block, .mermaid { overflow: visible; }
+  .page p, .page li { orphans: 3; widows: 3; }
 }
 `;
 
